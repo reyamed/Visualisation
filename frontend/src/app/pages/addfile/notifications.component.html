@@ -1,0 +1,59 @@
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="card-title">Analyse new file</h5>
+        <p class="card-category">Select new file from your repo
+        </p>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="card card-plain">
+              <div>
+                
+              </div>
+              <div class="card-header">
+                <h5 class="card-title">You can choose the type of file and annotation</h5>
+              </div>
+              <form (ngSubmit)="addFile(fileForm.value)" [formGroup]="fileForm">
+                <div class="mx-auto">
+                  <label for="file"  class="col-md-4 col-form-label">Select new file:</label>
+                  <input type="file" id="file-input" formControlName="cover" (change)="handleInput($event)"/>
+                <br>
+             
+                  <label for="file-type"  class="col-md-4 col-form-label">File Type:</label>
+                  <select id="file-type">
+                    <option value="csv">CSV</option>
+                    <option value="json">JSON</option>
+                    <option value="xlsx">XLSX</option>
+                  </select>
+                <br>
+                  <label for="annotation-type"  class="col-md-4 col-form-label">annotation Type:</label>
+                  <select id="annotation-type">
+                    <option value="csv">CSV</option>
+                    <option value="json">JSON</option>
+                    <option value="xlsx">XLSX</option>
+                    
+                  </select>
+                  <a routerLink="/admin/maps">Go to Maps</a>
+                <br>
+                </div>
+                 
+                <div class="d-flex justify-content-between">
+                  <div  class="p-5 ml-5"> 
+                    <Button  class="btn btn-danger ">Cancel</Button>
+                  </div>
+                  <div  class="p-5 mr-5"> 
+                    <Button class="btn btn-primary" type="submit" [disabled]="!fileForm.valid">Analyse</Button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

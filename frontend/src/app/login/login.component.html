@@ -1,0 +1,54 @@
+
+<link
+rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g=="
+crossorigin="anonymous"
+referrerpolicy="no-referrer"
+/>
+<!-- <app-nav-bar></app-nav-bar> -->
+<div class="container">
+  <div class="row">
+    <div class="offset-md-2 col-lg-5 col-md-7 offset-lg-4 offset-md-3">
+      <div class="panel border bg-white">
+        <div class="panel-heading">
+          <h3 class="pt-3 font-weight-bold">Login</h3>
+        </div>
+        <div class="panel-body p-3">
+          <form (ngSubmit)="loginfunc(loginForm.value)" [formGroup]="loginForm">
+            <div class="form-group py-2">
+              <div class="input-field">
+                <span class="far fa-user p-2"></span>
+                <input type="text" id="email" formControlName="email" placeholder="Enter Your  Email"  [(ngModel)]="loginObj.username" required/>
+                
+              </div>
+            </div>
+            <div class="form-group py-1 pb-2">
+              <div class="input-field">
+                <span class="fas fa-lock px-2"></span>
+                <input type="password" id="password" placeholder="**********" formControlName="password" [(ngModel)]="loginObj.password" required />
+          
+            </div>
+            </div>
+            <div class="d-flex justify-content-between">
+                <div >
+                    <button class="btn btn-primary mx-2" type="submit"  value="Log In" [disabled]="loginForm.invalid">Login</button>
+                  </div>
+                  <div >
+                    <button
+                    class="btn btn-primary  mx-2"
+                    routerLink="/register"
+                    type="submit"
+    
+                    value="register"
+                  >Register</button>
+                  </div>
+                 
+            </div>
+            
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

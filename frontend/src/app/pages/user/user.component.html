@@ -1,0 +1,127 @@
+<div class="row">
+  <div class="col-md-4">
+    <div class="card card-user">
+      <div class="image">
+        <img src="assets/img/damir-bosnjak.jpg" alt="...">
+      </div>
+      <div class="card-body">
+        <div class="author">
+          <a href="#">
+            <img class="avatar border-gray" src="assets/img/unkown.jpg" alt="...">
+            <h5 class="title">User</h5>
+          </a>
+          <p class="description">
+            @user
+          </p>
+        </div>
+      </div>
+      <div class="card-footer">
+        <hr>
+        <div class="button-container">
+          <div class="row">
+            <div class="col-lg-3 col-md-6 col-6 ml-auto">
+              <h5>12
+                <br>
+                <small>Files</small>
+              </h5>
+            </div>
+            <div class="col-lg-4 col-md-6 col-6 ml-auto mr-auto">
+              <h5>2GB
+                <br>
+                <small>Used</small>
+              </h5>
+            
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <div class="col-md-8">
+    <div class="card card-user">
+      <div class="card-header">
+        <h5 class="card-title">Personal information</h5>
+      </div>
+      <div class="card-body">
+        <form >
+          <div class="row">
+            <div class="col-md-4 pr-1">
+              <div class="form-group">
+                <label>Username</label>
+                <input type="text" class="form-control" placeholder="Username"  [(ngModel)]="obj.id" name="id">
+              </div>
+            </div>
+            <div class="col-md-8 pl-1">
+              <div class="form-group">
+                <label for="exampleInputEmail1">Email address</label>
+                <input type="email" class="form-control" placeholder="Email"  [(ngModel)]="obj.email" name="email">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6 pr-1">
+              <div class="form-group">
+                <label>First Name</label>
+                <input type="text" class="form-control" placeholder="Company" [(ngModel)]="obj.firstname" name="firstname">
+              </div>
+            </div>
+            <div class="col-md-6 pl-1">
+              <div class="form-group">
+                <label>Last Name</label>
+                <input type="text" class="form-control" placeholder="Last Name" [(ngModel)]="obj.lastname" name="lastname">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="update ml-auto mr-auto">
+              <button routerLink="/admin/maps" type="submit" class="btn btn-primary btn-round" s>Modify Profile</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <h4 class="card-title">History</h4>
+      </div>
+      <div class="card-body">
+        <ul class="list-unstyled team-members">
+          <li>
+            <div class="row">
+              <div class="col-md-7 col-7">
+                First annotation
+                <br />
+              </div>
+              <div class="col-md-3 col-3 text-right">
+                <button class="btn btn-sm btn-outline-success btn-round btn-icon"><i class="fa fa-file-pdf-o"></i></button>
+              </div>
+            </div>
+          </li>
+          <li>
+            <div class="row">
+              <div class="col-md-7 col-7">
+                Second annotation
+                <br />
+              </div>
+              <div class="col-md-3 col-3 text-right">
+                <button class="btn btn-sm btn-outline-success btn-round btn-icon"><i class="fa fa-file-pdf-o"></i></button>
+              </div>
+            </div>
+          </li>
+          <li>
+            <div class="row">
+              <div class="col-ms-7 col-7">
+                Third annotation
+                <br />
+              </div>
+              <div class="col-md-3 col-3 text-right">
+                <button class="btn btn-sm btn-outline-success btn-round btn-icon"><i class="fa fa-file-pdf-o"></i></button>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

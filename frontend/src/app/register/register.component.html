@@ -1,0 +1,67 @@
+
+<link
+rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g=="
+crossorigin="anonymous"
+referrerpolicy="no-referrer"
+/>
+<!-- <app-nav-bar></app-nav-bar> -->
+<div class="container">
+  <div class="row">
+    <div class="offset-md-2 col-lg-5 col-md-7 offset-lg-4 offset-md-3">
+      <div class="panel border bg-white">
+        <div class="panel-heading">
+          <h3 class="pt-3 font-weight-bold">Register</h3>
+        </div>
+        <div class="panel-body p-3">
+          <form (ngSubmit)="addUser(userForm.value)" [formGroup]="userForm">
+            <div class="form-group py-2">
+              <div class="input-field">
+                <span class="far fa-user p-2"></span>
+                <input type="text" id="firsname" formControlName="firstname" placeholder="Enter your first name"  [(ngModel)]="loginObj.firstname1" required/>
+                
+              </div>
+            </div>
+            <div class="form-group py-2">
+              <div class="input-field">
+                <span class="far fa-user p-2"></span>
+                <input type="text" id="lastname" formControlName="lastname" placeholder="Enter your last name"  [(ngModel)]="loginObj.lastname1" required/>
+                
+              </div>
+            </div>
+            <div class="form-group py-2">
+            <div class="input-field">
+              <span class="fas fa-envelope  p-2"></span>
+              <input type="email" id="email" formControlName="email" placeholder="Enter  Email"  [(ngModel)]="loginObj.email1" required/>
+            </div>
+          </div>
+            <div class="form-group py-1 pb-2">
+              <div class="input-field">
+                <span class="fas fa-lock px-2"></span>
+                <input type="password" id="password" placeholder="password" formControlName="password" [(ngModel)]="loginObj.password1" required />
+            </div>
+            </div>
+            <div class="form-group py-1 pb-2">
+              <div class="input-field">
+                <span class="fas fa-lock px-2"></span>
+                <input type="password" id="password" placeholder="confirm password"  [(ngModel)]="loginObj.passconf1" required />
+            </div>
+            </div>
+            <div class="d-flex justify-content-between">
+                
+                  <div >
+                    <button class="btn btn-primary  mx-2" routerLink="/login" type="submit">return</button>
+                  </div>
+                  <div >
+                    <button class="btn btn-primary mx-2" type="submit" [disabled]="userForm.invalid">Log In</button>
+                  </div>
+                 
+            </div>
+            
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
