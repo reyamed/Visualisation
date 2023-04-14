@@ -9,82 +9,48 @@
           <table class="table">
             <thead class=" text-primary">
               <th>
-                File name
+                  visualisation Id
               </th>
               <th>
-                annotation
+                orginal file
+                
               </th>
               <th>
-                Cluster
+                result file
               </th>
-              <th class="text-right">
-                result
+              <th>
+                Json file
+              </th>
+              <th>
+                visualisation
               </th>
             </thead>
             <tbody>
-              <tr>
+              <tr *ngFor="let item of newArray; let i = index">
+                <td>{{i}}</td>
                 <td>
-                  file 1
+                  <button class="btn btn-sm btn-outline-success btn-round " (click)="dowloadFile('uploads/', item +'.csv' )">Download File</button>
                 </td>
                 <td>
-                  annotation 1
+                  <button class="btn btn-sm btn-outline-success btn-round " (click)="dowloadFile('results/', item +'.csv' )">Download result</button>
                 </td>
                 <td>
-                  cluster 1
-                </td>
-                <td class="text-right">
-                  <div>
-                    <button class="btn btn-sm btn-outline-success btn-round btn-icon"><i class="fa fa-file-pdf-o"></i></button>
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  file 2
+                  <button class="btn btn-sm btn-outline-success btn-round " (click)="dowloadFile('json', item +'.json')">Download JSON</button>
                 </td>
                 <td>
+                  <button class="btn btn-sm btn-outline-success btn-round " (click)="visualize( item +'.json' )">Visualisation</button>
+                </td>
+                <!-- <td>
                   annotation 2
                 </td>
                 <td>
                   cluster 2
-                </td>
-                <td class="text-right">
+                </td> -->
+                <!-- <td class="text-right">
                   <div>
                     <button class="btn btn-sm btn-outline-success btn-round btn-icon"><i class="fa fa-file-pdf-o"></i></button>
                   </div>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  file 3
-                </td>
-                <td>
-                  annotation 3
-                </td>
-                <td>
-                  cluster 3
-                </td>
-                <td class="text-right">
-                  <div>
-                    <button class="btn btn-sm btn-outline-success btn-round btn-icon"><i class="fa fa-file-pdf-o"></i></button>
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  file 4
-                </td>
-                <td>
-                  annotation 4
-                </td>
-                <td>
-                  cluster 4
-                </td>
-                <td class="text-right">
-                  <div>
-                    <button class="btn btn-sm btn-outline-success btn-round btn-icon"><i class="fa fa-file-pdf-o"></i></button>
-                  </div>
-                </td>
+                </td> -->
               </tr>
             </tbody>
           </table>

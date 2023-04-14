@@ -59,9 +59,24 @@ public addFile(filee: any){
   //  formData.append("content", content);
    formData.append("cover", filee[0], filee["filename"]);
 
-   return this.httpClient.post<afile>(this.server + "addpost", formData)
+   return this.httpClient.post<afile>(this.server + "addpost", formData, { withCredentials: true })
 }
 
 
- 
+public analyse(filename: any){
+  return this.httpClient.post<afile>(this.server + "analyse", filename, { withCredentials: true })
+} 
+
+public logout(){
+  return this.httpClient.get<user>(this.server + "logout", { withCredentials: true })
 }
+
+public protected(){
+  return this.httpClient.get<user>(this.server + "protected",  { withCredentials: true })
+}
+
+public getfiles(){
+  return this.httpClient.get<user>(this.server + "getfiles",  { withCredentials: true })
+}
+}
+

@@ -6,7 +6,7 @@ import { TableComponent } from '../../pages/table/table.component';
 import { TypographyComponent } from '../../pages/typography/typography.component';
 import { MapsComponent } from '../../pages/maps/maps.component';
 import { NotificationsComponent } from '../../pages/addfile/notifications.component';
-import { AdminLayoutComponent } from './admin-layout.component';
+
 
 export const AdminLayoutRoutes: Routes = [
 

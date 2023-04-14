@@ -12,8 +12,7 @@ import { TypographyComponent }      from '../../pages/typography/typography.comp
 import { MapsComponent }            from '../../pages/maps/maps.component';
 import { NotificationsComponent }   from '../../pages/addfile/notifications.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { BrowserModule } from '@angular/platform-browser';
-import { HttpClientModule } from '@angular/common/http';
+import { ColorPickerModule } from 'ngx-color-picker';
 
 @NgModule({
   imports: [
@@ -23,8 +22,8 @@ import { HttpClientModule } from '@angular/common/http';
     NgbModule,
     ReactiveFormsModule,
     CommonModule, 
-    BrowserModule,
-    HttpClientModule,
+    ColorPickerModule,
+  
   ],
   declarations: [
     DashboardComponent,

@@ -46,14 +46,27 @@ export class RegisterComponent implements OnInit {
 
   public addUser(formData: user){
     
-   
+    if(this.loginObj.password !== this.loginObj.passconf) {
+      alert('password not matching');
+    } else if (this.loginObj.password.length <= 8){
+      alert('password should be over 8 characters');
+     
+    } else {
+      this.flaskApiService.addUser(formData).subscribe(res => {
+        console.log(formData);
+        console.log(res);
+        if (res['result'] == "emailexists") {
+          alert('email invalid or already exist');
+        } else {
+          alert('registration succeeded');
+          this.router.navigate(["/login"]);
+        }
+        
+      });
+    }
       //   alert('password not matching');
       // }
-    this.flaskApiService.addUser(formData).subscribe(res => {
-      console.log(formData);
-      console.log(res);
-      this.router.navigate(["/login"]);
-    });
+    
  
 }
 

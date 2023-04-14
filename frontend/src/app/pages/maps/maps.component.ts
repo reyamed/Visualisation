@@ -2,23 +2,34 @@ import { Component,OnInit } from '@angular/core';
 // [I]
 // import data from '/home/ilyes/Documents/Coding/Web/PattedV/visDataExample.json';
 import { HttpClient } from '@angular/common/http';
-
+import { Router } from '@angular/router';
+import { AngularFireModule } from "@angular/fire/compat";
+import { AngularFireStorage } from '@angular/fire/compat/storage';
+import { FlaskapiService } from 'app/flaskapi.service';
+import * as html2pdf from 'html2pdf.js';
+import {jsPDF}  from 'jspdf';
 // declare var google: any;
-
+import html2canvas from 'html2canvas';
 @Component({
   moduleId: module.id,
   selector: 'maps-cmp',
-  templateUrl: 'maps.component.html'
+  templateUrl: 'maps.component.html',
+  styleUrls: ['maps.component.scss']
 })
 
 export class MapsComponent implements OnInit {
   JSONFileURL = '../../../assets/test.json';
-
+  navigation = this.router.getCurrentNavigation();
+  filename: any;
   jsonDataResult: any = [];
   clusterClass = true;
   wordClass = true;
   dataImported = false;
-
+  analysefinished = false;
+  color1 = 'red';
+  clusterColors: string[] = ['aqua', 'blueviolet', 'coral', 'chartreuse', 'darkorange', 'darkolivegreen'];
+  clusterColorsDuplicate: string[] = ['aqua', 'blueviolet', 'coral', 'chartreuse', 'darkorange', 'darkolivegreen'];
+  selectedOption: string;
   defaultPauseBackgroundColor = 'red';
   shortPauseColor = 'rgb(200,0,30)';
   longPauseColor = 'rgb(255,0,0)';
@@ -36,7 +47,9 @@ export class MapsComponent implements OnInit {
 
   highlightedCluster: number = -1;
 
-  constructor(private httpClient: HttpClient) {}
+  constructor(public flaskApiService: FlaskapiService,private storage: AngularFireStorage, private router: Router, private httpClient: HttpClient) {
+    
+  }
 
   // Rajoute un espace avant chaque mot, sauf si ce mot est un point (ou un signe de ponctuation ?)
   spaceBefore(wordType: string): string {
@@ -71,8 +84,7 @@ export class MapsComponent implements OnInit {
   // Donne la couleur CSS associée à chaque cluster en fonction de son ID, et ce de ma nanière cyclique :
   // si l'ID dépasse le nombre de couleurs définies, on réutilise certaines couleurs
   getClusterColor(clusterID: number): string {
-    let colors: string[] = ['aqua', 'blueviolet', 'coral', 'chartreuse', 'darkorange', 'darkolivegreen'];
-    return colors[clusterID%(colors.length)];
+    return this.clusterColors[clusterID%(this.clusterColors.length)];
   }
 
   // Retourne le style associé à chaque cluster en fonction de si celui-ci est mis en évidence (curseur placé sur un burst de ce cluster) ou pas
@@ -156,39 +168,282 @@ export class MapsComponent implements OnInit {
     return this.typeStyles[wordType];
   }
 
-  ngOnInit() {
+  public analyse() {
+    if (this.navigation.extras.state) {
+      this.filename = this.navigation.extras.state.data;
+      // if the json file already exists
+      if (this.filename.endsWith(".json")) {
+        // Use the data object
+        const ref = this.storage.ref("uploads/"+ this.filename);
+        ref.getDownloadURL().subscribe(url => {
+        // Importation des données en format JSON
+        this.httpClient.get(url).subscribe((data) => {
+        this.jsonDataResult = data;
+        this.dataImported = true;
+        console.log('Données importées : ', this.jsonDataResult);
+        this.analysefinished = true
+        setTimeout(() => {
+          // console.log("Fin du délai");
+          for (let burst of this.jsonDataResult) {
+           // console.log('On essaye !');
+            document.getElementById('burst-' + burst.burstID).addEventListener("mouseover", () => {
+              //console.log('over !');
+              this.highlightedCluster = burst.clusterID;
+              // console.log('highlightedCluster = ' + this.highlightedCluster);
+            });
 
-    // Importation des données en format JSON
-    this.httpClient.get(this.JSONFileURL).subscribe((data) => {
-      this.jsonDataResult = data;
-      this.dataImported = true;
-      console.log('Données importées : ', this.jsonDataResult);
+           // console.log('On essaye 2!');
+            document.getElementById('burst-' + burst.burstID).addEventListener("mouseout", () => {
+            //  console.log('over !2');
+              this.highlightedCluster = -1;
+              // console.log('highlightedCluster = ' + this.highlightedCluster);
+            });
+            document.getElementById('burst-' + burst.burstID).addEventListener("click", () => {
+              // Que faire en cas de clic sur un cluster ?
+              // window.location.href = '/admin/clusterView?clusterID=' + burst.clusterID;
+              alert('Cluster d\'ID n°' + burst.clusterID);
+            });
+          }
+        }, 500);
     });
+  });
+      }
+      
+      // if visualisation for the first time
+      else {
+        console.log("ggggg", this.filename)
+        const obj = {
+          "filename": this.filename
+        };
+        
+        this.flaskApiService.analyse(obj).subscribe(res1 => {
+    
+          console.log(res1);
+            
+          // Use the data object
+          const ref = this.storage.ref(res1["json"]);
+          ref.getDownloadURL().subscribe(url => {
+          // Importation des données en format JSON
+          this.httpClient.get(url).subscribe((data) => {
+          this.jsonDataResult = data;
+          this.dataImported = true;
+          console.log('Données importées : ', this.jsonDataResult);
+          this.analysefinished = true
+          setTimeout(() => {
+            // console.log("Fin du délai");
+            for (let burst of this.jsonDataResult) {
+              // console.log('On essaye !');
+              document.getElementById('burst-' + burst.burstID).addEventListener("mouseover", () => {
+                // console.log('over !');
+                this.highlightedCluster = burst.clusterID;
+                // console.log('highlightedCluster = ' + this.highlightedCluster);
+              });
+              document.getElementById('burst-' + burst.burstID).addEventListener("mouseout", () => {
+                // console.log('over !');
+                this.highlightedCluster = -1;
+                // console.log('highlightedCluster = ' + this.highlightedCluster);
+              });
+              document.getElementById('burst-' + burst.burstID).addEventListener("click", () => {
+                // Que faire en cas de clic sur un cluster ?
+                // window.location.href = '/admin/clusterView?clusterID=' + burst.clusterID;
+                alert('Cluster d\'ID n°' + burst.clusterID);
+              });
+            }
+          }, 500);
+      });
+    });
+      
+            });
+      }
+      
+      
+      
+    }
+  }
+  //   generatePdf(htmlContent: string): void {
+  //     const doc = new jsPDF(
+  //       {
+  //         orientation: "landscape",
+  //         unit: "in",
+  //         format: [4, 2]
+  //       }
+  //     );
+  //     const element = document.createElement('div');
+  //     element.innerHTML = htmlContent;
+  //     setTimeout(() => {
+  //       html2canvas(element).then((canvas) => {
+  //         const imgData = canvas.toDataURL('image/png');
+  //         doc.addImage(imgData, 'PNG', 0, 0, 1100,1100);
+  //         doc.save('file.pdf');
+  //       });
+  //     }, 1000);
+    
+  // }
+  // cette fonction permet de telecharger l'élement html sous forme pdf
+  downloadPdf() { 
+    
+    
+    const element = document.getElementById('visuals');
+    const elementHeight = element.offsetHeight;
+    const pageHeight = 842; // A4 page height in pixels
+    const totalPages = Math.ceil(elementHeight / pageHeight);
+    const options = {
+      margin:       [1, 0, 0, 1],
+    filename:     'myfile.pdf',
+    image:        { type: 'PNG', quality: 0.98 },
+    html2canvas:  {   allowTaint: true,
+      dpi: 500,
+      letterRendering: true,
+      logging: true,
+      scale: .8
+  },
+    jsPDF:        { format: 'a4', orientation: 'landscape' },
+    pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] },
+    enableLinks:  true,
+ 
+    };
+    html2pdf().from(element).set(options).save();
+//   const element = document.getElementById('visuals');
+//   setTimeout(() => {
+//   html2canvas(element, {
+//     useCORS: true,
+//     scrollY: element.scrollHeight,
+//     scale: 0.8,
+//   }).then((canvas) => {
+//     const imgData = canvas.toDataURL('image/png');
+//     const pdf = new jsPDF();
+//     pdf.addImage(imgData, 'PNG', 0, 0, pdf.internal.pageSize.getWidth(), pdf.internal.pageSize.getHeight());
+//     pdf.save('myPdf.pdf');
+//   });
+// }, 1000);
+// const doc = new jsPDF({
+//   orientation: 'portrait',
+//   unit: 'in',
+//   format: [8.5, 11],
+//   compress: true
+// });
+
+// const element = document.getElementById('visuals');
+
+// html2canvas(element).then((canvas) => {
+//   const imgData = canvas.toDataURL('image/png');
+
+//   const imgProps = doc.getImageProperties(imgData);
+//   const pdfWidth = doc.internal.pageSize.getWidth();
+//   const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+//   let position = 0;
+//   let page = 1;
+
+//   doc.addImage(
+//     imgData,
+//     'PNG',
+//     0,
+//     position,
+//     pdfWidth,
+//     pdfHeight,
+//     undefined,
+//     'FAST'
+//   );
+
+//   position += pdfHeight;
+
+//   while (position < canvas.height) {
+//     doc.addPage();
+//     page++;
+
+//     const pageHeight = pdfHeight > canvas.height - position ? canvas.height - position : pdfHeight;
+
+//     doc.addImage(
+//       imgData,
+//       'PNG',
+//       0,
+//       position,
+//       pdfWidth,
+//       pageHeight,
+//       undefined,
+//       'FAST'
+//     );
+
+//     position += pageHeight;
+//   }
+
+//   doc.save('document.pdf');
+// });
+// Get the HTML element
+// const element = document.getElementById('visuals');
+
+// // Get the height of the HTML element
+// const elementHeight = element.offsetHeight;
+
+// // Calculate the number of pages needed
+// const pageHeight = 842; // A4 page height in pixels
+// const totalPages = Math.ceil(elementHeight / pageHeight);
+
+// // Generate the PDF
+// html2pdf().set({
+//   margin: [0.5, 0.5],
+//   filename: 'my-file.pdf',
+//   image: { type: 'jpeg', quality: 0.98 },
+//   html2canvas: { dpi: 192, letterRendering: true, allowTaint: true },
+//   jsPDF: { unit: 'px', format: 'a4' },
+//   pagebreak: { mode: ['avoid-all', 'css'] },
+// }).from(element).then((pdf) => {
+//   for (let i = 0; i < totalPages; i++) {
+//     if (i > 0) {
+//       pdf.addPage();
+//     }
+//     pdf.setPage(i + 1);
+//     pdf.addImage(pdf.internal.canvas.toDataURL(), 'PNG', 0, -(i * pageHeight));
+//   }
+//   pdf.save();
+// });
+  }
+
+
+
+   
+  
+  onOptionSelected(){
+
+    if(this.selectedOption == 'default') {
+      setTimeout(() => {
+        // console.log("Fin du délai");
+        for (let burst of this.jsonDataResult) {
+          // console.log('On essaye !');
+          document.getElementById('burst-' + burst.burstID).addEventListener("mouseover", () => {
+            // console.log('over !');
+            this.highlightedCluster = burst.clusterID;
+            // console.log('highlightedCluster = ' + this.highlightedCluster);
+          });
+          document.getElementById('burst-' + burst.burstID).addEventListener("mouseout", () => {
+            // console.log('over !');
+            this.highlightedCluster = -1;
+            // console.log('highlightedCluster = ' + this.highlightedCluster);
+          });
+          document.getElementById('burst-' + burst.burstID).addEventListener("click", () => {
+            // Que faire en cas de clic sur un cluster ?
+            // window.location.href = '/admin/clusterView?clusterID=' + burst.clusterID;
+            alert('Cluster d\'ID n°' + burst.clusterID);
+          });
+        }
+      }, 500);
+    }
+  }
+
+  
+
+  ngOnInit() {
+    this.selectedOption = 'default'
+    console.log(this.navigation.extras.state)
+    
+    this.analyse()
+   
 
     // Pour la mise en évidence des clusters lors du passage du curseur sur les différents bursts
     // console.log("Début du délai");
     // Timeout utilisé pour laisser le temps aux données d'être récupérées et à la page le temps d'être générée
-    setTimeout(() => {
-      // console.log("Fin du délai");
-      for (let burst of this.jsonDataResult) {
-        // console.log('On essaye !');
-        document.getElementById('burst-' + burst.burstID).addEventListener("mouseover", () => {
-          // console.log('over !');
-          this.highlightedCluster = burst.clusterID;
-          // console.log('highlightedCluster = ' + this.highlightedCluster);
-        });
-        document.getElementById('burst-' + burst.burstID).addEventListener("mouseout", () => {
-          // console.log('over !');
-          this.highlightedCluster = -1;
-          // console.log('highlightedCluster = ' + this.highlightedCluster);
-        });
-        document.getElementById('burst-' + burst.burstID).addEventListener("click", () => {
-          // Que faire en cas de clic sur un cluster ?
-          // window.location.href = '/admin/clusterView?clusterID=' + burst.clusterID;
-          alert('Cluster d\'ID n°' + burst.clusterID);
-        });
-      }
-    }, 500);
+    
 
     // var myLatlng = new google.maps.LatLng(40.748817, -73.985428);
     // var mapOptions = {

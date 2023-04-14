@@ -17,7 +17,7 @@ export class LoginComponent implements OnInit {
   isSuccessful = false;
   isSignUpFailed = false;
   errorMessage = '';
-
+  color = 'red';
   constructor(public flaskApiService: FlaskapiService, private router: Router) {
     this.loginObj = {
       username:'',

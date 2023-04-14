@@ -18,9 +18,10 @@ import { FlaskapiService } from "./flaskapi.service";
 import { HttpClientModule } from "@angular/common/http";
 import { BrowserModule } from "@angular/platform-browser";
 import { NotificationsComponent } from "./pages/addfile/notifications.component";
-
-
-
+import { AngularFireModule } from "@angular/fire/compat";
+import { AngularFireStorageModule  } from '@angular/fire/compat/storage';
+import { environment } from "environments/environment";
+import { ColorPickerModule } from 'ngx-color-picker';
 @NgModule({
   declarations: [
     AppComponent,
@@ -43,9 +44,11 @@ import { NotificationsComponent } from "./pages/addfile/notifications.component"
     CommonModule, 
     BrowserModule,
     HttpClientModule,
-
+    AngularFireModule.initializeApp(environment.firebaseConfig),
+    AngularFireStorageModule,
+    ColorPickerModule
   ],
-  providers: [FlaskapiService],
+  providers: [FlaskapiService, AngularFireStorageModule],
   bootstrap: [AppComponent],
   
 })

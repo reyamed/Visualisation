@@ -5,8 +5,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
-import nltk
-from nltk.tokenize import word_tokenize
 import spacy
 
 nlp = spacy.load("fr_core_news_sm")
@@ -19,7 +17,7 @@ def analysefunc(content):
 
     #Suppresion données vides
     df_burst = df_burst.dropna()
-
+    data.to_csv("please.csv")
     #Suppresion données sans caractères
     df_burst = df_burst[df_burst['burst'].str.strip().astype(bool)]
 
@@ -51,6 +49,7 @@ def analysefunc(content):
 
     df_kmeans = df_kmeans.drop(['session','redacteur','debut_burst','longueur_burst','startPos','endPos','docLength'], axis=1)
 
+    #choisir que les pauses ayant une durée de > 2 seconds
     df_kmeans = df_kmeans[df_kmeans['duree_pause'] >= 2.0]
 
     distortions = []
@@ -66,14 +65,17 @@ def analysefunc(content):
     df_kmeans[df_kmeans.cluster==0].shape
 
     df_cluster = data.dropna(subset = ['burst'])
+    df_cluster = df_cluster.dropna(axis=1, how='all')
+
     df_cluster = df_cluster[df_cluster['burst'].str.strip().astype(bool)]
     df_cluster['duree_pause'] = df_cluster['duree_pause'].fillna(0)
     df_cluster = df_cluster[df_cluster['duree_pause'] >= 2.0]
-
+    df_cluster.drop(df_cluster.columns[17], axis=1, inplace=True)
     df_cluster["cluster"]=df_kmeans["cluster"]
-
-    df_cluster[df_cluster.cluster==4].shape
-
+    df_cluster
+    df_cluster.to_csv("whywhywhy.csv")
+    print(df_cluster["cluster"].shape)
+    print(df_cluster.shape)
     df_cluster0 = df_cluster[df_cluster.cluster==0]
     df_cluster1 = df_cluster[df_cluster.cluster==1]
     df_cluster2 = df_cluster[df_cluster.cluster==2]
@@ -86,6 +88,7 @@ def analysefunc(content):
         repeated = []
         for j, b in enumerate(df_cluster_i["burst"]):
             cluster_dict = {}
+            # si les mots dans le burst existent deja dans la liste on doit augmenter leurs id car sinon l'ancien burst sera écrasé
             if b in repeated:
                 k = df_cluster_i[df_cluster_i["burst"] == b].index[repeated.count(b)]
             else: 
@@ -101,13 +104,14 @@ def analysefunc(content):
 
     for i in range(len(sorted_clusters)):
         sorted_clusters[i]['burstID'] = i+1
-    # json_string = json.dump(sorted_clusters)
-    return sorted_clusters
+    
+    return sorted_clusters, df_cluster
 
 
 def postag(text):
     tex = nlp(text)
     l = []
     for token in tex:
-        l.append([token.text, token.pos_])
+        new_string = token.text.replace("'", "")
+        l.append([new_string, token.pos_])
     return l
