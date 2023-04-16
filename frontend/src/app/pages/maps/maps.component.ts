@@ -219,8 +219,12 @@ export class MapsComponent implements OnInit {
         this.flaskApiService.analyse(obj).subscribe(res1 => {
     
           console.log(res1);
-            
-          // Use the data object
+            if (res1["json"]=="nothing"){
+              alert("This CSV file does not have the required columns and format to be analysed")
+              this.router.navigate(["/admin/notifications"]);
+            }
+            else {
+// Use the data object
           const ref = this.storage.ref(res1["json"]);
           ref.getDownloadURL().subscribe(url => {
           // Importation des données en format JSON
@@ -252,6 +256,8 @@ export class MapsComponent implements OnInit {
           }, 500);
       });
     });
+            }
+          
       
             });
       }

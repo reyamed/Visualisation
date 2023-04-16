@@ -35,6 +35,7 @@ export class FlaskapiService {
   }
 
   public login(loginObj: loginI){
+    console.log("you won't find me")
     const {email, password} = loginObj;
     const formData: FormData = new FormData();
     formData.append("email", email);

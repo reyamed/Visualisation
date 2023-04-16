@@ -47,6 +47,8 @@ Session(app)
 mysql = MySQL(app)
 cors = CORS(app, resources={r"/*": {"origins": "*", "supports_credentials": True}})
 
+# email of firebase admin: visualisationproj@gmail.com
+# password of firebase admin: iiiia2023
 #fire base config
 config = {
     "apiKey": "AIzaSyBAghCslXj0tiegqo-_BJzOeaLZH_DvpSY",
@@ -79,6 +81,7 @@ storage = firebase.storage()
 # @app.route("/api/addposts", methods=["POST"])
 #     if request.method == "POST":
         
+# fonction permettant le sign up de l'utilisateur
 @app.route("/api/register", methods=["POST"])
 def register():
     if request.method == "POST":
@@ -88,16 +91,13 @@ def register():
         email = request.form.get("email")
         password = request.form.get("password")
         try:
-            # email = "ahfmeereizi@gmail.com"
-            # password = "11111tbrtbrtb"
-        # Where I added my shit
+            
         #create the user
             user = auth.create_user_with_email_and_password(email, password)
             # #login the user right away
             # user = auth.sign_in_with_email_and_password(email, password)   
             userinfo = {
                 "email":email,
-                "password":password,
                 "firstname":firstname,
                 "lastname":lastname
             }
@@ -131,10 +131,12 @@ def register():
     return jsonify({'result': status})
 
 
+
 @app.route('/api/login', methods=['POST'])
 def login():
     msg = ''
     # Check if "username" and "password" POST requests exist (user submitted form)
+    print("??????????????????????")
     if request.method == 'POST':
         # Create variables for easy access
 
@@ -171,7 +173,6 @@ def login():
             return jsonify({'status': True})
         except:
             print("error")
-            status = "shit"
             return jsonify({'status': False})
 
         # cursor = mysql.connection.cursor()
@@ -201,7 +202,7 @@ def getuser():
     if request.method == "POST":
         print(session)
         if session.get("loggedin"):
-            # return jsonify({'status': "heeof"})
+         
             return jsonify({"id": session['id'], "email": session["email"], "firstname": session['firstname'], "lastname": session['lastname']})
         else:
             return None
@@ -256,7 +257,7 @@ def addpost():
                 
                 localId = session["id"]
                 db.child("users").child(localId).child("csvfile").push(infofile)
-                print("gggggggggggggggggggggggggggggggg")
+
                 # orderedDict = db.child("users").order_by_key().equal_to(localId).limit_to_first(1).get()
 
             # cur = mysql.connection.cursor()
@@ -268,11 +269,11 @@ def addpost():
                 
                 
             except: 
-                print("ffffffffffffffffffffff")
+                
                 status = 'fail'
                 
 
-            # os.remove(os.path.join(app.config["UPLOAD_FOLDER"], filename))
+            os.remove(os.path.join(app.config["UPLOAD_FOLDER"], filename))
 
             return jsonify({"data" : status})
         else:
@@ -311,85 +312,99 @@ def analyse():
         # Retrieve contents of uploaded file from Firebase Storage
             with urllib.request.urlopen(url) as url:
                 content = url.read().decode("latin1")
-
-            # csv_data = pd.read_csv(StringIO(content))
-
-        # Do something with CSV data...
-        # For example, print out the first 5 rows of the CSV file
-            # print(csv_data.head())
-            print('avant')
+    
             result, resultdfcluster = analysefunc(content)
-            print('apres')
-            #local filename
-            filenamejson = filename.split(".")[0]
-            filenamejson += ".json"
-            result_firebase_filename = "results/"
-            result_firebase_filename += filename.split("/")[1]
 
+            # si il y a eu une exception au niveau de l'analyse
+            if result == "fail":
+                # Delete the file
+                blob.delete()
+                localId = session["id"]
+                # delete file reference in user so it don't appear in history
+                csvfile = db.child("users").child(localId).child("csvfile").order_by_key().limit_to_last(1).get()
+                most_recent_child_key = list(csvfile.val().items())[0][0]
+                print(most_recent_child_key)
+
+                most_recent_child_ref = db.child("users").child(localId).child("csvfile").child(most_recent_child_key).remove()
+
+        
+                return jsonify({"json" : "nothing"})
+            else:
+                
+                #local filename
+                filenamejson = filename.split(".")[0]
+                filenamejson += ".json"
+                result_firebase_filename = "results/"
+                result_firebase_filename += filename.split("/")[1]
+
+
+                
 
             
 
-           
+                #local file csv
+                local_filename = "./result/"
+                local_filename += filename.split("/")[1]
+                resultdfcluster.to_csv(local_filename) 
+                
+                #upload the file
+                storage.child(result_firebase_filename).put(local_filename)
+                #get the url of the file
+                cover_imagedf = storage.child(result_firebase_filename).get_url(None)
+                infofiledf = {
+                    "filename": filename.split("/")[1],
+                    "URL": cover_imagedf
+                }
+                os.remove(os.path.join("", local_filename))
+                try:
+                    if "id" in session:
+                        localId = session["id"]
+                        db.child("users").child(localId).child('resultdf').push(infofiledf)
+                        
+                    # cur = mysql.connection.cursor()
+                    # cur.execute(""" INSERT INTO fichier ( cover, covername) VALUES (%s, %s)  """, (cover_image, filename))
+                    # mysql.connection.commit()
+                    # cur.close()
+                    status = filenamejson
+                except: 
+                    status = 'success'
 
-            #local file csv
-            local_filename = "./result/"
-            local_filename += filename.split("/")[1]
-            resultdfcluster.to_csv(local_filename) 
+                #firebase filename
+                firebase_filename = filenamejson
+                with open(filenamejson, "w") as f:
+                    jsonify(json.dump(result, f))
+
+                storage.child(firebase_filename).put(filenamejson)
+                print("fichier enregistré")
+                #get the url of the file
+                cover_image = storage.child(firebase_filename).get_url(None)
             
-            #upload the file
-            storage.child(result_firebase_filename).put(local_filename)
-            #get the url of the file
-            cover_imagedf = storage.child(result_firebase_filename).get_url(None)
-            infofiledf = {
-                "filename": filename.split("/")[1],
-                "URL": cover_imagedf
-            }
-
-            try:
-                if "id" in session:
-                    localId = session["id"]
-                    db.child("users").child(localId).child('resultdf').push(infofiledf)
-                    
-                # cur = mysql.connection.cursor()
-                # cur.execute(""" INSERT INTO fichier ( cover, covername) VALUES (%s, %s)  """, (cover_image, filename))
-                # mysql.connection.commit()
-                # cur.close()
-                status = filenamejson
-            except: 
-                status = 'success'
-
-            #firebase filename
-            firebase_filename = filenamejson
-            with open(filenamejson, "w") as f:
-                jsonify(json.dump(result, f))
-
-            storage.child(firebase_filename).put(filenamejson)
-            print("fichier enregistré")
-            #get the url of the file
-            cover_image = storage.child(firebase_filename).get_url(None)
-           
-            infofile = {
-                "filename": filenamejson,
-                "URL": cover_image
-            }
-            try:
-                if "id" in session:
-                    localId = session["id"]
-                    db.child("users").child(localId).child('jsonfiles').push(infofile)
-                    
-                # cur = mysql.connection.cursor()
-                # cur.execute(""" INSERT INTO fichier ( cover, covername) VALUES (%s, %s)  """, (cover_image, filename))
-                # mysql.connection.commit()
-                # cur.close()
-                status = filenamejson
-            except: 
-                status = 'fail'
+                infofile = {
+                    "filename": filenamejson,
+                    "URL": cover_image
+                }
+                # supprimer fichier localement
+                os.remove(os.path.join("./", filenamejson))
+                try:
+                    if "id" in session:
+                        localId = session["id"]
+                        db.child("users").child(localId).child('jsonfiles').push(infofile)
+                        
+                    # cur = mysql.connection.cursor()
+                    # cur.execute(""" INSERT INTO fichier ( cover, covername) VALUES (%s, %s)  """, (cover_image, filename))
+                    # mysql.connection.commit()
+                    # cur.close()
+                    status = filenamejson
+                except: 
+                    status = 'fail'
         else:
             status = "nothing"
         return jsonify({"json" : status})
     else:
         return jsonify({"json" : "nothing"})
 
+
+# fonction permettant de recuperer les fichiers stocké 
 @app.route("/api/getfiles", methods=["GET"])   
 def getfiles():  
     try:
@@ -410,14 +425,11 @@ def getfiles():
             # dic = {str(i): file.val()['filename'].split('.')[0] for i in range(count) for file in files }
     except:
         dic = {"0": "nothing"}
-        status = 'no'
+        
     return jsonify(dic)
 
 
-#recuper fichier
-#analyser
-#stocker resultat dans un fichier json
-#envoyer fichier json au front
+
 
 
    # Redirect to login page

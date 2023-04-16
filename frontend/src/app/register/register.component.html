@@ -59,13 +59,13 @@ referrerpolicy="no-referrer"
                 <input type="password" id="password" placeholder="confirm password" formControlName="password" [(ngModel)]="loginObj.passconf" required />
             </div>
             </div>
-            <div class="d-flex justify-content-between">
+            <div class="d-flex align-items-center justify-content-between">
                 
                   <div >
-                    <button class="btn btn-danger  mx-2" routerLink="/login" type="button">return</button>
+                    <button class="btn btn-danger" routerLink="/login" type="button">return</button>
                   </div>
                   <div >
-                    <button class="btn btn-primary mx-2" type="submit" [disabled]="!userForm.valid">Log In</button>
+                    <button class="btn btn-success" type="submit" [disabled]="!userForm.valid">Log In</button>
                   </div>
                  
             </div>
