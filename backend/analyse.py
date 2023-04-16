@@ -18,7 +18,6 @@ def analysefunc(content):
 
         #Suppresion données vides
         df_burst = df_burst.dropna()
-        data.to_csv("please.csv")
         #Suppresion données sans caractères
         df_burst = df_burst[df_burst['burst'].str.strip().astype(bool)]
 
