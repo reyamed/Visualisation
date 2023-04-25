@@ -94,8 +94,7 @@ def register():
             
         #create the user
             user = auth.create_user_with_email_and_password(email, password)
-            # #login the user right away
-            # user = auth.sign_in_with_email_and_password(email, password)   
+            
             userinfo = {
                 "email":email,
                 "firstname":firstname,
@@ -104,66 +103,35 @@ def register():
             local = auth.get_account_info(user['idToken'])
             localId = local['users'][0]['localId']
            
-            # # Wher I ended my shit
-            # # json_data = request.get_json()
-            # # print(json_data)
-            # # firstname = json_data['firstname']
-            # # lastname = json_data['lastname']
-            # # email=json_data['email']
-            # # password=json_data['password']
-
-            # # Save user data in Firebase Realtime Database
+         
             db.child('users').child(localId).set(userinfo)
             status = "success"
         except:
             status = "emailexists"
-            #get cursor to exec the mysql functions
-        # try:
-        #     cur = mysql.connection.cursor()
-        #     cur.execute(""" INSERT INTO user (firstname, lastname, email, password) VALUES (%s, %s, %s, %s)  """,
-        #         (firstname, lastname, email, password)
-        #     )
-        #     mysql.connection.commit()
-        #     cur.close()
-        #     status = "success"
-        # except: 
-        #     status = 'this user is already registered'
+           
     return jsonify({'result': status})
 
 
 
 @app.route('/api/login', methods=['POST'])
 def login():
-    msg = ''
-    # Check if "username" and "password" POST requests exist (user submitted form)
-    print("??????????????????????")
+    print("allllllllllllllllooooooooo")
     if request.method == 'POST':
-        # Create variables for easy access
-
-        # json_data = request.get_json()
-        # print(json_data)
-        # firstname = json_data['firstname']
-        # lastname = json_data['lastname']
-        # email=json_data['email']
-        # password=json_data['password']
+        print("alllllllllllllllllllllllllllllllooooooooo")
         email = request.form['email']
         password = request.form['password']
         # Check if account exists using MySQL
         try:
         # Verify user credentials with Firebase Authentication
-            # email = "ahfmeereizi@gmail.com"
-            # password = "11111tbrtbrtb"
+           
             user = auth.sign_in_with_email_and_password(email, password)
-            print("AAA")
+     
             local = auth.get_account_info(user['idToken'])
             localId = local['users'][0]['localId']
-            print(localId)
+
             orderedDict = db.child("users").order_by_key().equal_to(localId).limit_to_first(1).get()
             items = list(orderedDict.val().items())
-            print(items[0][1]['email'])
-            # user_data = users_ref.child(localId).get()
-            # print(user_data)
-            # session['user'] = user.uid
+        
             session['loggedin'] = True
             session['id'] = items[0][0]
             session['email'] = items[0][1]['email']
@@ -175,27 +143,7 @@ def login():
             print("error")
             return jsonify({'status': False})
 
-        # cursor = mysql.connection.cursor()
-        # cursor.execute('SELECT * FROM user WHERE email = %s AND password = %s', (email, password,))
-        # # Fetch one record and return result
-        # account = cursor.fetchone()
-        # print(type(account))
-        # print(account)
-        # # If account exists in accounts table in out database
-        # if account:
-        #     # Create session data, we can access this data in other routes
-        #     session['loggedin'] = True
-        #     session['id'] = account[0]
-        #     session['email'] = account[3]
-        #     session['firstname'] = account[1]
-        #     session['lastname'] = account[2]
-        #     session['password'] = account[4]
-        #     print(session)
-        #     return jsonify({'status': True})
-        # else:
-        #     # Account doesnt exist or username/password incorrect
-        #     msg = 'Incorrect email/password!'
-        #     return jsonify({'status': False})
+      
         
 @app.route('/api/getuser',  methods=['POST'])
 def getuser():
@@ -220,10 +168,7 @@ def logout():
 @app.route("/api/addpost", methods=["POST"])
 def addpost():
     if request.method == "POST":
-        # print(request.form, flush=True)
 
-        # title = request.form.get("title")
-        # content = request.form.get("content")
         cover = request.files["cover"]
         if cover.filename.split(".")[1] == "csv":
             filename = str(uuid.uuid4())
@@ -258,21 +203,10 @@ def addpost():
                 localId = session["id"]
                 db.child("users").child(localId).child("csvfile").push(infofile)
 
-                # orderedDict = db.child("users").order_by_key().equal_to(localId).limit_to_first(1).get()
-
-            # cur = mysql.connection.cursor()
-            # cur.execute(""" INSERT INTO fichier ( cover, covername) VALUES (%s, %s)  """, (cover_image, filename))
-            # mysql.connection.commit()
-            # cur.close()
                 status = filename
 
-                
-                
             except: 
-                
                 status = 'fail'
-                
-
             os.remove(os.path.join(app.config["UPLOAD_FOLDER"], filename))
 
             return jsonify({"data" : status})
@@ -280,6 +214,8 @@ def addpost():
 
             return jsonify({"data" : "fail"})
 
+
+# une fonction qui vérifie si l'utilisateur est authentifié, elle est utilisé pour l'intediction des lien niveau frontend
 @app.route('/api/protected',  methods=['GET'])
 def protected():
     if 'loggedin' in session:
@@ -337,11 +273,6 @@ def analyse():
                 result_firebase_filename = "results/"
                 result_firebase_filename += filename.split("/")[1]
 
-
-                
-
-            
-
                 #local file csv
                 local_filename = "./result/"
                 local_filename += filename.split("/")[1]
@@ -360,11 +291,6 @@ def analyse():
                     if "id" in session:
                         localId = session["id"]
                         db.child("users").child(localId).child('resultdf').push(infofiledf)
-                        
-                    # cur = mysql.connection.cursor()
-                    # cur.execute(""" INSERT INTO fichier ( cover, covername) VALUES (%s, %s)  """, (cover_image, filename))
-                    # mysql.connection.commit()
-                    # cur.close()
                     status = filenamejson
                 except: 
                     status = 'success'
@@ -389,11 +315,6 @@ def analyse():
                     if "id" in session:
                         localId = session["id"]
                         db.child("users").child(localId).child('jsonfiles').push(infofile)
-                        
-                    # cur = mysql.connection.cursor()
-                    # cur.execute(""" INSERT INTO fichier ( cover, covername) VALUES (%s, %s)  """, (cover_image, filename))
-                    # mysql.connection.commit()
-                    # cur.close()
                     status = filenamejson
                 except: 
                     status = 'fail'
@@ -418,11 +339,6 @@ def getfiles():
                 count += 1
                 
                 dic[count] = file.val()['filename'].split('.')[0]
-                # print(file.val()['filename'].split('.')[0])
-
-
-            # on cherche à créer un dictionnaire qui contient les noms des fichiers comme des valeus et leur ordre comme clé. 
-            # dic = {str(i): file.val()['filename'].split('.')[0] for i in range(count) for file in files }
     except:
         dic = {"0": "nothing"}
         

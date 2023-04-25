@@ -306,104 +306,14 @@ export class MapsComponent implements OnInit {
     jsPDF:        { format: 'a4', orientation: 'landscape' },
     pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] },
     enableLinks:  true,
- 
+    header: function(currentPage, totalPages, document) {
+      if (currentPage === 1) {
+        return '<div style="text-align:center;"><h1 style="margin:0;">'+ this.selectedOption +'</h1></div>';
+      }
+    }
     };
     html2pdf().from(element).set(options).save();
-//   const element = document.getElementById('visuals');
-//   setTimeout(() => {
-//   html2canvas(element, {
-//     useCORS: true,
-//     scrollY: element.scrollHeight,
-//     scale: 0.8,
-//   }).then((canvas) => {
-//     const imgData = canvas.toDataURL('image/png');
-//     const pdf = new jsPDF();
-//     pdf.addImage(imgData, 'PNG', 0, 0, pdf.internal.pageSize.getWidth(), pdf.internal.pageSize.getHeight());
-//     pdf.save('myPdf.pdf');
-//   });
-// }, 1000);
-// const doc = new jsPDF({
-//   orientation: 'portrait',
-//   unit: 'in',
-//   format: [8.5, 11],
-//   compress: true
-// });
 
-// const element = document.getElementById('visuals');
-
-// html2canvas(element).then((canvas) => {
-//   const imgData = canvas.toDataURL('image/png');
-
-//   const imgProps = doc.getImageProperties(imgData);
-//   const pdfWidth = doc.internal.pageSize.getWidth();
-//   const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
-//   let position = 0;
-//   let page = 1;
-
-//   doc.addImage(
-//     imgData,
-//     'PNG',
-//     0,
-//     position,
-//     pdfWidth,
-//     pdfHeight,
-//     undefined,
-//     'FAST'
-//   );
-
-//   position += pdfHeight;
-
-//   while (position < canvas.height) {
-//     doc.addPage();
-//     page++;
-
-//     const pageHeight = pdfHeight > canvas.height - position ? canvas.height - position : pdfHeight;
-
-//     doc.addImage(
-//       imgData,
-//       'PNG',
-//       0,
-//       position,
-//       pdfWidth,
-//       pageHeight,
-//       undefined,
-//       'FAST'
-//     );
-
-//     position += pageHeight;
-//   }
-
-//   doc.save('document.pdf');
-// });
-// Get the HTML element
-// const element = document.getElementById('visuals');
-
-// // Get the height of the HTML element
-// const elementHeight = element.offsetHeight;
-
-// // Calculate the number of pages needed
-// const pageHeight = 842; // A4 page height in pixels
-// const totalPages = Math.ceil(elementHeight / pageHeight);
-
-// // Generate the PDF
-// html2pdf().set({
-//   margin: [0.5, 0.5],
-//   filename: 'my-file.pdf',
-//   image: { type: 'jpeg', quality: 0.98 },
-//   html2canvas: { dpi: 192, letterRendering: true, allowTaint: true },
-//   jsPDF: { unit: 'px', format: 'a4' },
-//   pagebreak: { mode: ['avoid-all', 'css'] },
-// }).from(element).then((pdf) => {
-//   for (let i = 0; i < totalPages; i++) {
-//     if (i > 0) {
-//       pdf.addPage();
-//     }
-//     pdf.setPage(i + 1);
-//     pdf.addImage(pdf.internal.canvas.toDataURL(), 'PNG', 0, -(i * pageHeight));
-//   }
-//   pdf.save();
-// });
   }
 
 

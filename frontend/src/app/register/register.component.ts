@@ -14,20 +14,31 @@ export class RegisterComponent implements OnInit {
 
   // username: string;
   // password: string;
-  loginObj: any;
+  
+  public loginObj = {
+    email:'',
+    firstname:'',
+    lastname:'',
+    password:'',
+    passconf:'',
+
+  };
   // isSuccessful = false;
   // isSignUpFailed = false;
   // errorMessage = '';
+  emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
   constructor(public flaskApiService: FlaskapiService, private router: Router) {  
       this.loginObj = {
       email:'',
-      username:'',
+      firstname:'',
+      lastname:'',
       password:'',
       passconf:'',
 
     };
     }
-  
+    // testEmail = this.emailRegex.test(this.loginObj.email)
   // constructor(private router: Router,) {
   
   // }
@@ -51,7 +62,10 @@ export class RegisterComponent implements OnInit {
     } else if (this.loginObj.password.length <= 8){
       alert('password should be over 8 characters');
      
-    } else {
+    } else if (!(this.emailRegex.test(this.loginObj.email))){
+      alert('Invalid email');
+    }
+    else {
       this.flaskApiService.addUser(formData).subscribe(res => {
         console.log(formData);
         console.log(res);
