@@ -7,9 +7,8 @@ import { AdminLayoutRoutes } from './admin-layout.routing';
 
 import { DashboardComponent }       from '../../pages/dashboard/dashboard.component';
 import { UserComponent }            from '../../pages/user/user.component';
-import { TableComponent }           from '../../pages/table/table.component';
-import { TypographyComponent }      from '../../pages/typography/typography.component';
-import { MapsComponent }            from '../../pages/maps/maps.component';
+import { TableComponent }           from '../../pages/history/table.component';
+import { MapsComponent }            from '../../pages/visualisation/maps.component';
 import { NotificationsComponent }   from '../../pages/addfile/notifications.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ColorPickerModule } from 'ngx-color-picker';
@@ -29,7 +28,6 @@ import { ColorPickerModule } from 'ngx-color-picker';
     DashboardComponent,
     UserComponent,
     TableComponent,
-    TypographyComponent,
     MapsComponent,
     
   ]
