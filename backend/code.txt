@@ -1,4 +1,0 @@
-pip install flask
-pip install flask-cors
-pip install Flask-MySQLdb
-pip install pyrebase4
