@@ -10,7 +10,6 @@ import os
 import uuid 
 from werkzeug.utils import secure_filename
 import pyrebase
-from flask_session import Session
 #import pyrebase
 import urllib.request
 import pandas as pd
@@ -35,7 +34,7 @@ app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 app.config['SESSION_COOKIE_SAMESITE'] = "None"
-Session(app)
+
 
 # app.config.update(SESSION_COOKIE_SAMESITE="None", SESSION_COOKIE_SECURE=True)
 # session['loggedin'] = False
